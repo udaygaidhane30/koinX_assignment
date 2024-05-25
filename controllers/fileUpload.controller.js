@@ -1,11 +1,11 @@
-import { createReadStream, unlinkSync } from "fs";
 import csv from "csv-parser";
 import Trade from "../models/trade.js";
+import fs from "fs";
 
 const uploadCSV = (req, res) => {
   const filePath = req.file.path;
 
-  createReadStream(filePath)
+  fs.createReadStream(filePath)
     .pipe(csv())
     .on("data", async (row) => {
       const [baseCoin, quoteCoin] = row.Market.split("/");
@@ -19,7 +19,7 @@ const uploadCSV = (req, res) => {
       });
     })
     .on("end", () => {
-      unlinkSync(filePath);
+      fs.unlinkSync(filePath);
       res.status(200).send("File processed successfully");
     })
     .on("error", (error) => {
@@ -28,6 +28,4 @@ const uploadCSV = (req, res) => {
     });
 };
 
-export default {
-  uploadCSV,
-};
+export default uploadCSV;
